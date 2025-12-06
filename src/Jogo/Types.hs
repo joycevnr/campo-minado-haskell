@@ -1,1 +1,1 @@
- 
+ module Jogo.Types where

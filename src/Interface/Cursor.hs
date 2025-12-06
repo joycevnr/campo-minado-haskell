@@ -1,7 +1,6 @@
 module Interface.Cursor where
 import System.Console.ANSI
 import System.IO
-import Jogo.Logica
 
 --------------------------------------------------------------------------------
 -- | Move o cursor no tabuleiro de acordo com os comandos das setas.

@@ -1,6 +1,5 @@
 module Main (main) where
 import System.Console.ANSI
-import System.IO
 import Interface.PreparaJogo
 
 --------------------------------------------------------------------------------
