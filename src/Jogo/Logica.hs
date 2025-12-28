@@ -1,8 +1,8 @@
 module Jogo.Logica where
+import System.IO
 
 --------------------------------------------------------------------------------
--- | Lê um comando do teclado.
---
+-- | Lê uma entrada bruta do teclado.
 -- Comportamento:
 --   - Se a tecla pressionada for ESC, lê os próximos dois caracteres
 --     para capturar sequências de setas (códigos ANSI).
@@ -11,7 +11,7 @@ module Jogo.Logica where
 -- Retorno:
 --   - Uma string representando a tecla ou sequência de tecla:
 --       * Setas → "\ESC[A", "\ESC[B", "\ESC[C", "\ESC[D"
---       * Outros caracteres → "a", "s", etc.
+--       * Outros caracteres → "w", "a", " ", etc.
 --------------------------------------------------------------------------------
 getKey :: IO String
 getKey = do

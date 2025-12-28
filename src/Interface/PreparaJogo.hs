@@ -2,15 +2,16 @@ module Interface.PreparaJogo where
 import System.Console.ANSI
 import System.IO
 import Jogo.Logica
-import Jogo.Jogo
+import Jogo.Jogo (jogo, instrucoes)
 
 --------------------------------------------------------------------------------
 -- | Configura o terminal para a execução do jogo.
 --
---  - Esconde o cursor
---  - Desativa o echo do teclado
---  - Desativa o buffering
---  - Limpa a tela
+-- Ações realizadas:
+--   1. Esconde o cursor;
+--   2. Desativa o 'echo';
+--   3. Desativa o buffering;
+--   4. Limpa a tela inicial.
 --------------------------------------------------------------------------------
 setUpTerminal :: IO()
 setUpTerminal = do
@@ -18,7 +19,6 @@ setUpTerminal = do
     hSetEcho stdin False
     hSetBuffering stdin NoBuffering
     clearScreen
-
 
 --------------------------------------------------------------------------------
 -- | Exibe o menu principal do jogo.
@@ -42,7 +42,9 @@ menu (l,c)= do
     setCursorPosition (l-4) (c-6)
     putStrLn "CAMP💣  MINAD💥"
     setCursorPosition (l-2) (c-37)
-    putStrLn "Use as setas do seu teclado e Enter para escolher sua díficuldade ou sair"
+    putStrLn "Use W/S ou Setas e ENTER para escolher a dificuldade"
+    
+    -- Opções
     setCursorPosition l (c-2)
     putStrLn "FÁCIL"
     setCursorPosition (l+1) (c-2)
@@ -53,7 +55,7 @@ menu (l,c)= do
     putStrLn "SAIR"
 
 --------------------------------------------------------------------------------
--- | Inicia o jogo após o jogador escolher a dificuldade.
+-- | Gerencia o fluxo de início de jogo.
 --
 -- Parâmetros:
 --   @(l, c)@ – posição central da tela.
@@ -78,12 +80,22 @@ comecarJogo (l,c) = do
             let inicioL = l - (nivel)
             let inicioC = c - (nivel*2)
             let limite  = (nivel * 2) 
+            
             tabuleiro (inicioL, inicioC) nivel limite
-            instrucoes l
-            jogo ((inicioL+1),(inicioC+2)) (((inicioL+1),(inicioC+2)),(((nivel-1)+l),((nivel*2)+c-2))) []
-    
+            
+            instrucoes (l + nivel + 2)
+            
+            let limiteSuperior = inicioL + 1
+            let limiteInferior = (nivel - 1) + l
+            let limiteEsquerdo = inicioC + 2
+            let limiteDireito  = (nivel * 2) + c - 2
+            
+            jogo (limiteSuperior, limiteEsquerdo) ((limiteSuperior, limiteEsquerdo), (limiteInferior, limiteDireito)) []
+
 --------------------------------------------------------------------------------
--- | Desenha o tabuleiro ASCII do jogo.
+-- | Função recursiva que desenha o grid do tabuleiro/ o tabuleiro ASCII do jogo.
+--
+-- Alterna entre desenhar linhas de separação (+---+) e linhas de células (|   |).
 --
 -- Parâmetros:
 --   * @(linha, coluna)@ – posição de início do tabuleiro
@@ -100,17 +112,18 @@ tabuleiro :: (Int, Int) -> Int -> Int -> IO ()
 tabuleiro (linha,coluna) n limite = do
     setCursorPosition linha coluna
     if limite == 0 then
-        putStrLn (take ((n*4)+1) "+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+")
+        putStrLn (take ((n*4)+1) (cycle "+---"))
     else do
         if even limite
-            then putStrLn (take ((n*4)+1) "+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+")
-            else putStrLn (take ((n*4)+1) "|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |")
+            then putStrLn (take ((n*4)+1) (cycle "+---"))
+            else putStrLn (take ((n*4)+1) (cycle "|   "))
 
         tabuleiro (linha + 1, coluna) n (limite - 1)
-    
+
 --------------------------------------------------------------------------------
--- | Menu de seleção de dificuldade.
+-- | Lógica de seleção do Menu (Input).
 --
+-- Permite navegar entre as opções usando Setas ou W/S.
 -- Parâmetros:
 --   * @(linha, coluna)@ – posição atual do cursor "->"
 --   * @limite@ – linha onde começa a primeira opção do menu
@@ -124,11 +137,11 @@ tabuleiro (linha,coluna) n limite = do
 --
 -- > (mod (index ± 1) 4) + limite
 --
--- Retorno ao pressionar Enter:
---   * FÁCIL -> 9
---   * MÉDIO -> 16
---   * DIFÍCIL -> 20
---   * SAIR -> 0
+-- Retorno (Int):
+--   * 9  -> Fácil
+--   * 16 -> Médio
+--   * 20 -> Difícil
+--   * 0  -> Sair
 --------------------------------------------------------------------------------
 dificuldade :: (Int,Int) -> Int-> IO Int
 dificuldade (linha,coluna) limite = do
@@ -136,20 +149,23 @@ dificuldade (linha,coluna) limite = do
     setCursorPosition linha coluna
     putStr "  "
     hFlush stdout
-    let index = linha-limite
-        novaLinha
-            | comando == "\ESC[A" = (mod (index-1) 4) + limite
-            | comando == "\ESC[B" = (mod (index+1) 4) + limite
-            | otherwise           = linha
-
+    
+    let index = linha - limite
+    let novaLinha
+            -- Cima (Seta UP ou W)
+            | comando == "\ESC[A" || comando == "w" || comando == "W" = (mod (index-1) 4) + limite
+            -- Baixo (Seta DOWN ou S)
+            | comando == "\ESC[B" || comando == "s" || comando == "S" = (mod (index+1) 4) + limite
+            | otherwise = linha
     setCursorPosition novaLinha coluna
     putStr "->"
     hFlush stdout
 
-    if comando == "\n"
+    -- Verifica seleção
+    if comando == "\n" -- Enter
         then 
-            if linha == limite then return 9
-            else if linha == (limite+1) then return 16
-            else if linha == (limite+2) then return 20
-            else return 0
+            if linha == limite then return 9        -- Fácil
+            else if linha == (limite+1) then return 16 -- Médio
+            else if linha == (limite+2) then return 20 -- Difícil
+            else return 0                              -- Sair
         else dificuldade (novaLinha, coluna) limite
