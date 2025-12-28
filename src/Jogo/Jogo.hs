@@ -19,9 +19,11 @@ instrucoes linha = do
     setCursorPosition linha 0
     putStr "INSTRUÇÕES:"
     setCursorPosition (linha+1) 0
-    putStr "+ Use as setas do teclado para se mover"
+    putStr "+ Use WASD ou SETAS para se mover"
     setCursorPosition (linha+2) 0
-    putStr "+ Precione S para sair"
+    putStr "+ ESPAÇO: Bandeira | ENTER: Abrir"
+    setCursorPosition (linha+3) 0
+    putStr "+ Pressione q para sair"
     hFlush stdout
 
 --------------------------------------------------------------------------------
@@ -34,18 +36,30 @@ instrucoes linha = do
 --
 -- Comportamento:
 --   - Lê comando do teclado com getKey
---   - Se o comando for uma seta (A/B/C/D), move o cursor usando moveCursor
+--   - Se o comando for uma seta ou WASD), move o cursor usando moveCursor
 --   - Se o comando for 's', sai do jogo
 --   - Caso contrário, mantém a posição e continua o loop
 --------------------------------------------------------------------------------
 jogo :: (Int, Int)->((Int,Int),(Int,Int))-> [(Int,Int)] -> IO()
 jogo posicaoAtual limites bombas = do
     comando <- getKey
-    if last comando `elem` ['A','B','C','D'] 
-        then do 
+    if (last comando `elem` ['A','B','C','D']) || (comando `elem` ["w","a","s","d","W","A","S","D"])
+        then do
             novaPosicao <- moveCursor posicaoAtual limites comando
             jogo novaPosicao limites bombas
-    else if comando=="s"
-        then return()
+    else if comando == " " 
+        then do
+            desenhaBandeira posicaoAtual
+            jogo posicaoAtual limites bombas
+    else if comando == "\n"
+        then do
+            desenhaAbrir posicaoAtual
+            jogo posicaoAtual limites bombas
+    else if comando == "q" || comando == "Q"
+        then do
+            setCursorPosition (fst (snd limites) + 4) 0
+            putStrLn "Jogo encerrado!"
+            showCursor
+            return ()
     else
         jogo posicaoAtual limites bombas
