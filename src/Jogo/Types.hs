@@ -39,4 +39,5 @@ data EstadoJogo = EstadoJogo
     , bombas    :: [Posicao]  -- Posições das bombas (pode ser usado para debug)
     , cursor    :: Posicao    -- Posição atual do cursor no tabuleiro lógico
     , status    :: Status     -- Situação atual da partida
+    , bandeiras :: [Posicao]  -- Posições das bandeiras já colocadas
     } deriving (Show)

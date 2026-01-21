@@ -108,10 +108,6 @@ iniciarPartida nivel (l, c) = do
 
     let linhasDesenho = nivel * 2
 
-    -- Desenha tabuleiro ASCII
-    desenhaTabuleiro inicioL inicioC nivel linhasDesenho
-    instrucoes (inicioL + linhasDesenho + 2)
-
     -- Calcula limites corretos do cursor (visual)
     let limites = calculaLimites inicioL inicioC nivel
 
@@ -125,7 +121,14 @@ iniciarPartida nivel (l, c) = do
             , bombas    = []
             , cursor    = fst limites
             , status    = EmJogo
+            , bandeiras = []
             }
+
+    desenhaBombasFaltando estadoInicial (inicioL - 2) inicioC
+
+    -- Desenha tabuleiro ASCII
+    desenhaTabuleiro inicioL inicioC nivel linhasDesenho
+    instrucoes (inicioL + linhasDesenho + 2)
 
     jogo estadoInicial (fst limites) limites
 
@@ -144,6 +147,16 @@ desenhaTabuleiro linha coluna n limite
     | otherwise   = linhaCelulas   linha coluna n >> proximo
   where
     proximo = desenhaTabuleiro (linha + 1) coluna n (limite - 1)
+
+-- | Define a linha que vai informar as bombas faltantes
+
+desenhaBombasFaltando :: EstadoJogo -> Int -> Int -> IO ()
+desenhaBombasFaltando estado linha coluna = do
+    setCursorPosition linha coluna
+    putStrLn $
+        "💣 Bombas faltando: "
+        ++ show (verificaBombasFaltando estado)
+
 
 -- | Desenha uma linha horizontal do tabuleiro.
 linhaHorizontal :: Int -> Int -> Int -> IO ()
@@ -245,3 +258,4 @@ selecionaNivel linha limite
     | linha == limite + 1 = return 16
     | linha == limite + 2 = return 21
     | otherwise           = return 0
+

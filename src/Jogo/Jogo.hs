@@ -8,7 +8,7 @@ module Jogo.Jogo where
 
 import System.Console.ANSI
 import System.IO
-import Jogo.Logica (getKey, consultaPosicao, cursorParaPosicao)
+import Jogo.Logica 
 import Jogo.Types
 import Interface.Cursor
     ( moveCursor
@@ -83,7 +83,10 @@ jogo estado cursorT limites = do
     --------------------------------------------------------------------------
     else if comando == " " then do
         desenhaBandeira cursorT
-        jogo estado cursorT limites
+
+        let novoEstado = acrescentaBandeira estado cursorT
+
+        jogo novoEstado cursorT limites
 
     --------------------------------------------------------------------------
     -- Abrir célula
@@ -95,12 +98,18 @@ jogo estado cursorT limites = do
                     (fst limites)
                     (tabuleiro estado)
 
-        case consultaPosicao (tabuleiro estado) posLogica of
-            Left "BOMBA" -> desenhaBomba cursorT
-            Right n      -> desenhaNumero cursorT n
-            _            -> return ()
+        let novoEstado = atualizaStatusAposAbrir estado posLogica
 
-        jogo estado cursorT limites
+        case status novoEstado of
+            Derrota -> telaDerrota
+            Vitoria -> telaVitoria
+            EmJogo -> do
+                case consultaPosicao (tabuleiro estado) posLogica of
+                    Left "BOMBA" -> desenhaBomba cursorT
+                    Right n      -> desenhaNumero cursorT n
+                    _            -> return ()
+
+                jogo novoEstado cursorT limites
 
     --------------------------------------------------------------------------
     -- Encerramento do jogo

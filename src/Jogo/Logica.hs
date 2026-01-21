@@ -8,9 +8,12 @@
 -- Nenhuma funcionalidade de interface gráfica é tratada aqui.
 module Jogo.Logica where
 
+import System.Console.ANSI
 import System.IO (getChar)
 import System.Random (randomRIO)
 import Jogo.Types
+import GHC.Base (VecElem(Int16ElemRep))
+import Data.List (sort)
 
 --------------------------------------------------------------------------------
 -- | Leitura de entrada do teclado
@@ -226,3 +229,95 @@ cursorParaPosicao (linhaCur, colunaCur) (inicioL, inicioC) tab =
         ( (linhaCur  - inicioL) `div` 2
         , (colunaCur - inicioC) `div` 4
         )
+
+
+--------------------------------------------------------------------------------
+-- | Posicionamento de bandeiras
+--------------------------------------------------------------------------------
+
+-- | Acrescenta uma bandeira à lista de bandeiras do Jogo
+--
+-- Retorna:
+--   novo EstadoJogo com a lista de bandeiras atualizada
+
+acrescentaBandeira :: EstadoJogo -> Posicao -> EstadoJogo
+acrescentaBandeira estado pos =
+    estado { bandeiras = pos : bandeiras estado }
+            
+--------------------------------------------------------------------------------
+-- | Gerenciamento de bombas
+--------------------------------------------------------------------------------
+
+-- | Consulta a quantidade de bombas que o user ainda falta marcar com uma bandeira
+--
+-- Retorna:
+--   a quantidade de bandeiras que ainda restam ao user para marcar bombas
+
+verificaBombasFaltando :: EstadoJogo -> Int 
+verificaBombasFaltando estado =
+    length (bombas estado) - length (bandeiras estado)
+
+-- | Verifica se a célula contém bomba
+--
+-- Retorna:
+--   False - se não foi aberta uma celula com bomba
+--   True - se foi aberta uma celula com bomba
+
+verificaCelulaEhBomba :: EstadoJogo -> Posicao -> Bool 
+verificaCelulaEhBomba estado pos =
+    pos `elem` bombas estado
+
+--------------------------------------------------------------------------------
+-- | Gerenciamento do Status
+--------------------------------------------------------------------------------
+
+-- | Verifica o status atual do jogo.
+--
+-- Retorna:
+--   Vitoria - se a lista de posicoes com bandeiras for igual a de bombas
+--   EmJogo - se ainda não foram marcada todas as bombas
+--   OBS: a Derrota é detectável em outras instâncias.
+
+verificaStatus :: EstadoJogo -> Status 
+verificaStatus estado
+    | sort (bombas estado) == sort (bandeiras estado) = Vitoria
+    | otherwise = EmJogo
+
+-- | Muda o Status de EstadoJogo após a abertura de uma célula
+--
+-- Retorna:
+--   um novo EstadoJogo com o Status atualizado
+
+atualizaStatusAposAbrir :: EstadoJogo -> Posicao -> EstadoJogo
+atualizaStatusAposAbrir estado pos
+    | verificaCelulaEhBomba estado pos = estado { status = Derrota }
+    | verificaStatus estado == Vitoria = estado { status = Vitoria }
+    | otherwise = estado
+
+--------------------------------------------------------------------------------
+-- | Exibições para finalização do jogo
+--------------------------------------------------------------------------------
+
+-- | Exibe a tela de vitória
+
+telaVitoria :: IO ()
+telaVitoria = do
+    clearScreen
+    setCursorPosition 10 10
+    putStrLn "🏆 VITÓRIA"
+    setCursorPosition 12 6
+    putStrLn "Você identificou todas as bombas!"
+    _ <- getChar
+    return ()
+
+-- | Exibe a tela de derrota
+
+telaDerrota :: IO ()
+telaDerrota = do
+    clearScreen
+    setCursorPosition 10 10
+    putStrLn "💣 GAME OVER"
+    setCursorPosition 12 6
+    putStrLn "Você pisou em uma bomba!"
+    _ <- getChar
+    return ()

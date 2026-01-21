@@ -150,7 +150,7 @@ marcaPosicao (linha, coluna) = do
 -- | Desenho de bandeira
 --------------------------------------------------------------------------------
 
--- | Desenha uma bandeira na célula atual.
+-- | Desenha uma bandeira na célula atual. 
 --
 -- Indica que o jogador marcou a célula
 -- como possível posição de bomba.
@@ -181,7 +181,7 @@ desenhaBandeira (linha, coluna) = do
 desenhaBomba :: (Int, Int) -> IO ()
 desenhaBomba (l,c) = do
     setCursorPosition l (c-2)
-    putStr "|💣 |"
+    putStr "| 💣 |"
     hFlush stdout
 
 --------------------------------------------------------------------------------
