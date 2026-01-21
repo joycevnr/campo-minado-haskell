@@ -52,7 +52,7 @@ menu (l, c) = do
     hFlush stdout
 
     setCursorPosition (l - 4) (c - 6)
-    putStrLn "CAMP💣  MINAD💥"
+    putStrLn "CAMP0  MINAD0"
 
     setCursorPosition (l - 2) (c - 37)
     putStrLn "Use W/S ou Setas e ENTER para escolher a dificuldade"
@@ -111,20 +111,20 @@ iniciarPartida nivel (l, c) = do
     -- Calcula limites corretos do cursor (visual)
     let limites = calculaLimites inicioL inicioC nivel
 
-    -- Gera o tabuleiro lógico
-    tab <- geraTabuleiroComBombas nivel nivel nivel
+    -- Gera o tabuleiro lógico e a lista de posições das bombas
+    (tab, posicoesBombas) <- geraTabuleiroComBombas nivel nivel nivel
 
     let estadoInicial = EstadoJogo
             { tabuleiro = tab
             , linhas    = nivel
             , colunas   = nivel
-            , bombas    = []
+            , bombas    = posicoesBombas
             , cursor    = fst limites
             , status    = EmJogo
             , bandeiras = []
+            , displayLinha  = inicioL - 2
+            , displayColuna = inicioC
             }
-
-    desenhaBombasFaltando estadoInicial (inicioL - 2) inicioC
 
     -- Desenha tabuleiro ASCII
     desenhaTabuleiro inicioL inicioC nivel linhasDesenho
@@ -147,15 +147,6 @@ desenhaTabuleiro linha coluna n limite
     | otherwise   = linhaCelulas   linha coluna n >> proximo
   where
     proximo = desenhaTabuleiro (linha + 1) coluna n (limite - 1)
-
--- | Define a linha que vai informar as bombas faltantes
-
-desenhaBombasFaltando :: EstadoJogo -> Int -> Int -> IO ()
-desenhaBombasFaltando estado linha coluna = do
-    setCursorPosition linha coluna
-    putStrLn $
-        "💣 Bombas faltando: "
-        ++ show (verificaBombasFaltando estado)
 
 
 -- | Desenha uma linha horizontal do tabuleiro.

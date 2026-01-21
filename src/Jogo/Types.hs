@@ -40,4 +40,6 @@ data EstadoJogo = EstadoJogo
     , cursor    :: Posicao    -- Posição atual do cursor no tabuleiro lógico
     , status    :: Status     -- Situação atual da partida
     , bandeiras :: [Posicao]  -- Posições das bandeiras já colocadas
+    , displayLinha  :: Int        -- linha que será descrito o "placar"
+    , displayColuna :: Int        -- coluna que será descrito o "placar"
     } deriving (Show)

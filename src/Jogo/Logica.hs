@@ -188,12 +188,13 @@ atualizaVizinhos tab =
 --   2. Sorteia as posições das bombas
 --   3. Insere as bombas no tabuleiro
 --   4. Calcula o número de bombas vizinhas
-geraTabuleiroComBombas :: Int -> Int -> Int -> IO Tabuleiro
+geraTabuleiroComBombas :: Int -> Int -> Int -> IO (Tabuleiro, [Posicao])
 geraTabuleiroComBombas numLinhas numColunas qtdBombas = do
     let base = geraTabuleiro numLinhas numColunas
     posBombas <- geraBombas numLinhas numColunas qtdBombas
     let comBombas = insereBombas base posBombas
-    return (atualizaVizinhos comBombas)
+    let final = atualizaVizinhos comBombas
+    return (final, posBombas)
 
 --------------------------------------------------------------------------------
 -- | Consulta de posição
@@ -235,14 +236,17 @@ cursorParaPosicao (linhaCur, colunaCur) (inicioL, inicioC) tab =
 -- | Posicionamento de bandeiras
 --------------------------------------------------------------------------------
 
--- | Acrescenta uma bandeira à lista de bandeiras do Jogo
+-- | Acrescenta uma bandeira à lista de bandeiras do Jogo se esta ainda não foi acrescentada
 --
 -- Retorna:
 --   novo EstadoJogo com a lista de bandeiras atualizada
 
 acrescentaBandeira :: EstadoJogo -> Posicao -> EstadoJogo
 acrescentaBandeira estado pos =
-    estado { bandeiras = pos : bandeiras estado }
+    if not (pos `elem` bandeiras estado)
+        then estado { bandeiras = pos : bandeiras estado }
+    else estado 
+    
             
 --------------------------------------------------------------------------------
 -- | Gerenciamento de bombas
@@ -266,6 +270,15 @@ verificaBombasFaltando estado =
 verificaCelulaEhBomba :: EstadoJogo -> Posicao -> Bool 
 verificaCelulaEhBomba estado pos =
     pos `elem` bombas estado
+
+-- | Define a linha que vai informar as bombas faltantes
+
+desenhaBombasFaltando :: EstadoJogo -> Int -> Int -> IO ()
+desenhaBombasFaltando estado linha coluna = do
+    setCursorPosition linha coluna
+    putStrLn $
+        "Bombas restantes: "
+        ++ show (verificaBombasFaltando estado)
 
 --------------------------------------------------------------------------------
 -- | Gerenciamento do Status
@@ -292,7 +305,7 @@ atualizaStatusAposAbrir :: EstadoJogo -> Posicao -> EstadoJogo
 atualizaStatusAposAbrir estado pos
     | verificaCelulaEhBomba estado pos = estado { status = Derrota }
     | verificaStatus estado == Vitoria = estado { status = Vitoria }
-    | otherwise = estado
+    | otherwise = estado { status = EmJogo }
 
 --------------------------------------------------------------------------------
 -- | Exibições para finalização do jogo
@@ -304,7 +317,7 @@ telaVitoria :: IO ()
 telaVitoria = do
     clearScreen
     setCursorPosition 10 10
-    putStrLn "🏆 VITÓRIA"
+    putStrLn "VITÓRIA!"
     setCursorPosition 12 6
     putStrLn "Você identificou todas as bombas!"
     _ <- getChar
@@ -316,7 +329,7 @@ telaDerrota :: IO ()
 telaDerrota = do
     clearScreen
     setCursorPosition 10 10
-    putStrLn "💣 GAME OVER"
+    putStrLn "GAME OVER"
     setCursorPosition 12 6
     putStrLn "Você pisou em uma bomba!"
     _ <- getChar

@@ -66,7 +66,7 @@ jogo :: EstadoJogo
      -> (Int, Int)
      -> ((Int, Int), (Int, Int))
      -> IO ()
-jogo estado cursorT limites = do
+jogo estado cursorT limites  = do
     comando <- getKey
 
     --------------------------------------------------------------------------
@@ -76,17 +76,17 @@ jogo estado cursorT limites = do
         ["w","a","s","d","W","A","S","D","\ESC[A","\ESC[B","\ESC[C","\ESC[D"]
     then do
         novoCursor <- moveCursor cursorT limites comando
-        jogo estado novoCursor limites
+        jogo estado novoCursor limites 
 
     --------------------------------------------------------------------------
     -- Plantar bandeira (somente visual)
     --------------------------------------------------------------------------
     else if comando == " " then do
         desenhaBandeira cursorT
-
         let novoEstado = acrescentaBandeira estado cursorT
+        desenhaBombasFaltando novoEstado (displayLinha novoEstado) (displayColuna novoEstado)
 
-        jogo novoEstado cursorT limites
+        jogo novoEstado cursorT limites 
 
     --------------------------------------------------------------------------
     -- Abrir célula
@@ -98,18 +98,19 @@ jogo estado cursorT limites = do
                     (fst limites)
                     (tabuleiro estado)
 
-        let novoEstado = atualizaStatusAposAbrir estado posLogica
+        let novoEstado = atualizaStatusAposAbrir estado cursorT
 
-        case status novoEstado of
-            Derrota -> telaDerrota
-            Vitoria -> telaVitoria
-            EmJogo -> do
-                case consultaPosicao (tabuleiro estado) posLogica of
-                    Left "BOMBA" -> desenhaBomba cursorT
-                    Right n      -> desenhaNumero cursorT n
-                    _            -> return ()
+        case consultaPosicao (tabuleiro estado) posLogica of
+            Left "BOMBA" -> do
+                desenhaBomba cursorT
+                telaDerrota
 
+            Right n -> do
+                desenhaNumero cursorT n
+                let novoEstado = atualizaStatusAposAbrir estado cursorT
                 jogo novoEstado cursorT limites
+
+            _ -> jogo estado cursorT limites
 
     --------------------------------------------------------------------------
     -- Encerramento do jogo
@@ -123,4 +124,4 @@ jogo estado cursorT limites = do
     -- Qualquer outro comando é ignorado
     --------------------------------------------------------------------------
     else
-        jogo estado cursorT limites
+        jogo estado cursorT limites 
