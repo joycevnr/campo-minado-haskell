@@ -2,8 +2,9 @@
 --
 -- Este módulo implementa a lógica do Campo Minado:
 -- leitura de entrada do teclado, criação e manipulação
--- do tabuleiro, geração de bombas, cálculo de vizinhança
--- e conversão entre coordenadas visuais e lógicas.
+-- do tabuleiro, geração de bombas, cálculo de vizinhança,
+-- conversão entre coordenadas visuais/lógicas,
+-- e manipulação no sistema de arquivos.
 --
 -- Nenhuma funcionalidade de interface gráfica é tratada aqui.
 module Jogo.Logica where
@@ -14,6 +15,7 @@ import System.Random (randomRIO)
 import Jogo.Types
 import GHC.Base (VecElem(Int16ElemRep))
 import Data.List (sort)
+import System.Directory (doesFileExist)
 
 --------------------------------------------------------------------------------
 -- | Leitura de entrada do teclado
@@ -308,29 +310,32 @@ atualizaStatusAposAbrir estado pos
     | otherwise = estado { status = EmJogo }
 
 --------------------------------------------------------------------------------
--- | Exibições para finalização do jogo
+-- | Manipulação no sistema de arquivos
 --------------------------------------------------------------------------------
 
--- | Exibe a tela de vitória
+-- | Lê o arquivo que contém os tempos já registrados.
+--
+-- Caso o arquivo "tempos.txt" já exista, seu conteúdo será lido.
+-- Caso contrário, nenhum tempo foi registrado ainda.
+-- A estrutura dentro desse arquivo é uma tupla com o seguinte formato:
+-- ([tempos do modo fácil], [tempos do modo médio], [tempos do modo difícil]) 
+--
+-- Retorno:
+--   String representando a estrutura com os tempos registrados.
+lerArquivo :: IO String
+lerArquivo = do
+    existe <- doesFileExist "tempos.txt"
+    if existe
+        then readFile "tempos.txt"
+    else return "([],[],[])"
 
-telaVitoria :: IO ()
-telaVitoria = do
-    clearScreen
-    setCursorPosition 10 10
-    putStrLn "VITÓRIA!"
-    setCursorPosition 12 6
-    putStrLn "Você identificou todas as bombas!"
-    _ <- getChar
-    return ()
-
--- | Exibe a tela de derrota
-
-telaDerrota :: IO ()
-telaDerrota = do
-    clearScreen
-    setCursorPosition 10 10
-    putStrLn "GAME OVER"
-    setCursorPosition 12 6
-    putStrLn "Você pisou em uma bomba!"
-    _ <- getChar
-    return ()
+-- | Grava no arquivo o conteúdo recebido.
+--
+-- Parâmetros:
+--   * @novosTempos@ – String representando a estrutura com os tempos registrados
+--
+-- Comportamento:
+--   - grava o conteúdo 
+--   - caso o arquivo "tempos.txt" não exista, ele será criado
+gravaArquivo :: String -> IO()
+gravaArquivo novosTempos = writeFile "tempos.txt" novosTempos

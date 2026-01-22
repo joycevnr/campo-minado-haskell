@@ -10,6 +10,9 @@ import System.Console.ANSI
 import System.IO
 import Jogo.Logica 
 import Jogo.Types
+import Data.Time (getCurrentTime)
+import Control.Concurrent.Async (cancel)
+import Interface.FinalizaJogo
 import Interface.Cursor
     ( moveCursor
     , desenhaBandeira
@@ -52,6 +55,7 @@ instrucoes linha = do
 --   * @cursorT@ – posição atual do cursor na tela
 --   * @limites@ – limites visuais do tabuleiro ASCII:
 --       @((linhaInicial, colunaInicial), (linhaFinal, colunaFinal))@
+--   * @estadoAuxiliar@ – estado com dados do cronometro e do ranking
 --
 -- Comportamento:
 --   - Lê comandos do teclado
@@ -65,8 +69,9 @@ instrucoes linha = do
 jogo :: EstadoJogo
      -> (Int, Int)
      -> ((Int, Int), (Int, Int))
+     -> EstadoAuxiliar
      -> IO ()
-jogo estado cursorT limites  = do
+jogo estado cursorT limites estadoAuxiliar = do
     comando <- getKey
 
     --------------------------------------------------------------------------
@@ -76,7 +81,7 @@ jogo estado cursorT limites  = do
         ["w","a","s","d","W","A","S","D","\ESC[A","\ESC[B","\ESC[C","\ESC[D"]
     then do
         novoCursor <- moveCursor cursorT limites comando
-        jogo estado novoCursor limites 
+        jogo estado novoCursor limites estadoAuxiliar
 
     --------------------------------------------------------------------------
     -- Plantar bandeira (somente visual)
@@ -86,7 +91,7 @@ jogo estado cursorT limites  = do
         let novoEstado = acrescentaBandeira estado cursorT
         desenhaBombasFaltando novoEstado (displayLinha novoEstado) (displayColuna novoEstado)
 
-        jogo novoEstado cursorT limites 
+        jogo novoEstado cursorT limites estadoAuxiliar
 
     --------------------------------------------------------------------------
     -- Abrir célula
@@ -103,19 +108,35 @@ jogo estado cursorT limites  = do
         case consultaPosicao (tabuleiro estado) posLogica of
             Left "BOMBA" -> do
                 desenhaBomba cursorT
+
+                cancel (idExecucao estadoAuxiliar)      -- encerra a execução do cronômetro
+
                 telaDerrota
+                encerramentoDerrota (modo estadoAuxiliar) (rankingLinha estadoAuxiliar) (rankingColuna estadoAuxiliar)      -- exibe o ranking
 
             Right n -> do
                 desenhaNumero cursorT n
                 let novoEstado = atualizaStatusAposAbrir estado cursorT
-                jogo novoEstado cursorT limites
+                jogo novoEstado cursorT limites estadoAuxiliar
 
-            _ -> jogo estado cursorT limites
+            _ -> jogo estado cursorT limites estadoAuxiliar
+        
+        {- 
+        O que fazer em caso de vitória:
+        
+        tempoFinal <- getCurrentTime            -- pega o tempo em que acaba a partida
+        cancel (idExecucao estadoAuxiliar)    -- encerra a execução do cronômetro
+
+        encerramentoVitoria (tempoInicio estadoAuxiliar) tempoFinal (modo estadoAuxiliar) (rankingLinha estadoAuxiliar) (rankingColuna estadoAuxiliar)
+        -- salva o tempo obtido e exibe o ranking
+        -}
 
     --------------------------------------------------------------------------
     -- Encerramento do jogo
     --------------------------------------------------------------------------
     else if comando `elem` ["q","Q"] then do
+        cancel (idExecucao estadoAuxiliar)      -- encerra a execução do cronômetro
+
         setCursorPosition (snd (snd limites) + 4) 0
         putStrLn "Jogo encerrado!"
         showCursor
@@ -124,4 +145,4 @@ jogo estado cursorT limites  = do
     -- Qualquer outro comando é ignorado
     --------------------------------------------------------------------------
     else
-        jogo estado cursorT limites 
+        jogo estado cursorT limites estadoAuxiliar

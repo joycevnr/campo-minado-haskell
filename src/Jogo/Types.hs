@@ -1,5 +1,8 @@
 module Jogo.Types where
 
+import Control.Concurrent.Async (Async)
+import Data.Time (UTCTime)
+
 -- Representa uma posição no tabuleiro usando índices (linha, coluna).
 -- Sempre em coordenadas lógicas, começando em (0,0).
 type Posicao = (Int, Int)
@@ -43,3 +46,12 @@ data EstadoJogo = EstadoJogo
     , displayLinha  :: Int        -- linha que será descrito o "placar"
     , displayColuna :: Int        -- coluna que será descrito o "placar"
     } deriving (Show)
+
+-- Estrutura que guarda dados do cronômetro e do ranking.
+data EstadoAuxiliar = EstadoAuxiliar
+    { idExecucao :: Async ()    -- Id da operação concorrente gerada para o cronometro
+    , modo :: Int               -- Dificuldade da partida
+    , tempoInicio :: UTCTime    -- Tempo em que a partida foi iniciada
+    , rankingLinha :: Int       -- Linha base do ranking
+    , rankingColuna :: Int      -- Coluna base do ranking
+    }

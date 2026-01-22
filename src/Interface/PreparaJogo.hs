@@ -11,6 +11,9 @@ import System.IO
 import Jogo.Logica
 import Jogo.Jogo (jogo, instrucoes)
 import Jogo.Types
+import Data.Time (getCurrentTime)
+import Interface.Cronometro
+import Control.Concurrent.Async (async)
 
 --------------------------------------------------------------------------------
 -- | Configuração do terminal
@@ -130,7 +133,19 @@ iniciarPartida nivel (l, c) = do
     desenhaTabuleiro inicioL inicioC nivel linhasDesenho
     instrucoes (inicioL + linhasDesenho + 2)
 
-    jogo estadoInicial (fst limites) limites
+    -- Inicia cronômetro
+    tempoInicial <- getCurrentTime
+    execucaoConcorrente <- async (cronometro tempoInicial (l + nivel + 1) (c - 12))
+
+    let estadoAuxiliar = EstadoAuxiliar
+            { idExecucao = execucaoConcorrente
+            , modo = nivel
+            , tempoInicio = tempoInicial
+            , rankingLinha = l - 21
+            , rankingColuna = c - 42
+            }
+
+    jogo estadoInicial (fst limites) limites estadoAuxiliar
 
 --------------------------------------------------------------------------------
 -- | Desenho do tabuleiro ASCII
