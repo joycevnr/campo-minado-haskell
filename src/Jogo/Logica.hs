@@ -245,9 +245,11 @@ cursorParaPosicao (linhaCur, colunaCur) (inicioL, inicioC) tab =
 
 acrescentaBandeira :: EstadoJogo -> Posicao -> EstadoJogo
 acrescentaBandeira estado pos =
-    if not (pos `elem` bandeiras estado)
-        then estado { bandeiras = pos : bandeiras estado }
-    else estado 
+    let estadoAtualizado =
+            if pos `elem` bandeiras estado
+                then estado
+                else estado { bandeiras = pos : bandeiras estado }
+    in estadoAtualizado { status = verificaStatus estadoAtualizado }
     
             
 --------------------------------------------------------------------------------
@@ -300,14 +302,14 @@ verificaStatus estado
 
 -- | Muda o Status de EstadoJogo após a abertura de uma célula
 --
--- Retorna:
---   um novo EstadoJogo com o Status atualizado
+-- Altera o estado para
+--   Derrota - caso a célula aberta tenha sido uma bomba
+--   Não faz alterações no estado em outros casos
 
 atualizaStatusAposAbrir :: EstadoJogo -> Posicao -> EstadoJogo
 atualizaStatusAposAbrir estado pos
     | verificaCelulaEhBomba estado pos = estado { status = Derrota }
-    | verificaStatus estado == Vitoria = estado { status = Vitoria }
-    | otherwise = estado { status = EmJogo }
+    | otherwise = estado
 
 --------------------------------------------------------------------------------
 -- | Manipulação no sistema de arquivos

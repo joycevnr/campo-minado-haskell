@@ -84,14 +84,28 @@ jogo estado cursorT limites estadoAuxiliar = do
         jogo estado novoCursor limites estadoAuxiliar
 
     --------------------------------------------------------------------------
-    -- Plantar bandeira (somente visual)
+    -- Plantar bandeira 
     --------------------------------------------------------------------------
     else if comando == " " then do
+        let posLogica =
+                cursorParaPosicao
+                    cursorT
+                    (fst limites)
+                    (tabuleiro estado)
+
+        let novoEstado = acrescentaBandeira estado posLogica
         desenhaBandeira cursorT
-        let novoEstado = acrescentaBandeira estado cursorT
         desenhaBombasFaltando novoEstado (displayLinha novoEstado) (displayColuna novoEstado)
 
-        jogo novoEstado cursorT limites estadoAuxiliar
+        if status novoEstado == Vitoria
+            then do
+                cancel (idExecucao estadoAuxiliar)
+                tempoFinal <- getCurrentTime 
+                telaVitoria
+                encerramentoVitoria (tempoInicio estadoAuxiliar) tempoFinal (modo estadoAuxiliar) (rankingLinha estadoAuxiliar) (rankingColuna estadoAuxiliar)
+
+            else
+                jogo novoEstado cursorT limites estadoAuxiliar
 
     --------------------------------------------------------------------------
     -- Abrir célula
@@ -121,16 +135,6 @@ jogo estado cursorT limites estadoAuxiliar = do
 
             _ -> jogo estado cursorT limites estadoAuxiliar
         
-        {- 
-        O que fazer em caso de vitória:
-        
-        tempoFinal <- getCurrentTime            -- pega o tempo em que acaba a partida
-        cancel (idExecucao estadoAuxiliar)    -- encerra a execução do cronômetro
-
-        encerramentoVitoria (tempoInicio estadoAuxiliar) tempoFinal (modo estadoAuxiliar) (rankingLinha estadoAuxiliar) (rankingColuna estadoAuxiliar)
-        -- salva o tempo obtido e exibe o ranking
-        -}
-
     --------------------------------------------------------------------------
     -- Encerramento do jogo
     --------------------------------------------------------------------------
