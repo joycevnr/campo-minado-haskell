@@ -283,6 +283,7 @@ desenhaBombasFaltando estado linha coluna = do
     putStrLn $
         "Bombas restantes: "
         ++ show (verificaBombasFaltando estado)
+        ++ " "
 
 --------------------------------------------------------------------------------
 -- | Gerenciamento do Status

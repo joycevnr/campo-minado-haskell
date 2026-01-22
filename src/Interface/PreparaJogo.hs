@@ -57,7 +57,7 @@ menu (l, c) = do
     setCursorPosition (l - 4) (c - 6)
     putStrLn "CAMP0  MINAD0"
 
-    setCursorPosition (l - 2) (c - 37)
+    setCursorPosition (l - 2) (c - 26)
     putStrLn "Use W/S ou Setas e ENTER para escolher a dificuldade"
 
     setCursorPosition l     (c - 2) >> putStrLn "FÁCIL"
