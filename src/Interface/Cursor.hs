@@ -115,8 +115,9 @@ limpaPosicao (linha, coluna) = do
         putStr "+---+"
 
     setCursorPosition linha (coluna-2)
-    putStr "|   |"
-
+    putStr "|"
+    setCursorPosition linha (coluna+2)
+    putStr "|"
     setCursorPosition (linha+1) (coluna-2)
     putStr "+---+"
 
@@ -138,8 +139,10 @@ marcaPosicao (linha, coluna) = do
         putStr "+---+"
 
     setCursorPosition linha (coluna-2)
-    putStr "|   |"
-
+    putStr "|"
+    setCursorPosition linha (coluna +2)
+    putStr "|"
+    
     setCursorPosition (linha+1) (coluna-2)
     putStr "+---+"
 
