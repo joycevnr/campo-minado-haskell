@@ -45,13 +45,17 @@ O jogo é totalmente executado no terminal (`CLI`) e conta com as seguintes cara
 
 O código foi modularizado para garantir legibilidade e facilitar a manutenção:
 
-| Módulo | Descrição |
+| Arquivo | Descrição |
 | :--- | :--- |
-| `Main.hs` | Ponto de entrada (Entry Point). Inicializa o terminal e o menu. |
-| `Interface.PreparaJogo` | Configuração do terminal, renderização do menu e do tabuleiro. |
-| `Interface.Cursor` | Lógica de movimentação e destaque visual da célula selecionada. |
-| `Jogo.Jogo` | Loop principal (*Game Loop*) e gerenciamento de estados. |
-| `Jogo.Logica` | Funções puras de lógica, entrada de dados (`getKey`) e regras. |
+| `src/Main.hs` | Ponto de entrada e inicialização do jogo. |
+| `src/Interface/PreparaJogo.hs` | Configuração do menu e visualização do tabuleiro. |
+| `src/Interface/Cursor.hs` | Controle de navegação e seleção de células. |
+| `src/Interface/Cronometro.hs` | Gerenciamento da contagem de tempo. |
+| `src/Interface/Ranking.hs` | Sistema de pontuação e recordes. |
+| `src/Interface/FinalizaJogo.hs` | Exibição das telas de vitória e derrota. |
+| `src/Jogo/Jogo.hs` | Loop principal e controle de estados. |
+| `src/Jogo/Logica.hs` | Regras do jogo e manipulação do tabuleiro. |
+| `src/Jogo/Types.hs` | Definição dos tipos de dados utilizados. |
 
 ---
 
