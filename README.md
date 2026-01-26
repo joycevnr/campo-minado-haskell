@@ -52,8 +52,11 @@ O jogo é totalmente executado no terminal (`CLI`) e conta com as seguintes cara
       </td>
       <td align="center">
         <img src="img/Vitoria.png" height="200" alt="Vitória">
+        <br><sub><b>Derrota</b></sub>
+      </td>
+      <td align="center">
         <img src="img/GameOver.png" height="200" alt="Game Over">
-        <br><sub><b>Vitória / Derrota</b></sub>
+        <br><sub><b>Vitória</b></sub>
       </td>
     </tr>
   </table>
