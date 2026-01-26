@@ -1,12 +1,36 @@
+<div align="center">
+
 # 💣 Campo Minado em Haskell
 
-Este projeto é uma implementação do clássico jogo **Campo Minado** (Minesweeper) desenvolvido inteiramente em **Haskell**. O objetivo é aplicar conceitos do **Paradigma Funcional** (imutabilidade, recursão, funções puras) em uma aplicação interativa via terminal.
+<img src="https://img.shields.io/badge/Haskell-5e5086?style=for-the-badge&logo=haskell&logoColor=white" alt="Haskell" />
+<img src="https://img.shields.io/badge/Paradigm-Functional-orange?style=for-the-badge" alt="Functional" />
+<img src="https://img.shields.io/badge/UFCG-PLP-blue?style=for-the-badge&logo=google-scholar&logoColor=white" alt="UFCG" />
+<img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License" />
+
+<br />
+
+<p align="center">
+  <b>Uma implementação puramente funcional do clássico jogo de estratégia.</b><br>
+  Desenvolvido para a disciplina de <i>Paradigmas de Linguagens de Programação</i> da <b>UFCG</b>.
+</p>
+
+[Funcionalidades](#funcionalidades-do-projeto) • [Estrutura](#estrutura-do-projeto) • [Instalação](#configuração-e-instalação) • [Autores](#autores)
+
+</div>
+
+<div style="border-bottom: 3px solid #5e5086;"></div>
 
 ---
 
-## 🚀 Funcionalidades do Projeto
+## Visão Geral
 
-O jogo é totalmente executado no terminal e permite que o jogador navegue usando o teclado.
+Este projeto é uma implementação do clássico jogo **Campo Minado** (Minesweeper) desenvolvido inteiramente em **Haskell**. O objetivo principal é aplicar conceitos fundamentais do **Paradigma Funcional** — como imutabilidade, recursão e funções puras — em uma aplicação interativa executada via terminal.
+
+---
+
+## Funcionalidades do Projeto
+
+O jogo é totalmente executado no terminal (`CLI`) e conta com as seguintes características:
 
 1. **Menu Principal:** Seleção de dificuldade (Fácil, Médio, Difícil) e opção de sair.
 2. **Navegação:** Cursor controlado pelas setas do teclado.
@@ -17,38 +41,83 @@ O jogo é totalmente executado no terminal e permite que o jogador navegue usand
 
 ---
 
-## 🛠️ Estrutura do Projeto
+## Estrutura do Projeto
 
-O projeto está organizado em módulos Haskell para melhor manutenção e legibilidade:
+O código foi modularizado para garantir legibilidade e facilitar a manutenção:
 
-- `Main.hs` – Ponto de entrada do jogo, verifica tamanho do terminal e inicia o menu.
-- `Interface.PreparaJogo.hs` – Configuração do terminal, menu principal, seleção de dificuldade e desenho do tabuleiro.
-- `Interface.Cursor.hs` – Controle do cursor no tabuleiro, incluindo movimento e destaque da célula.
-- `Jogo.Jogo.hs` – Loop principal do jogo e instruções ao jogador.
-- `Jogo.Logica.hs` – Funções auxiliares de entrada do usuário (`getKey`) e lógica de captura de comandos.
+| Módulo | Descrição |
+| :--- | :--- |
+| `Main.hs` | Ponto de entrada (Entry Point). Inicializa o terminal e o menu. |
+| `Interface.PreparaJogo` | Configuração do terminal, renderização do menu e do tabuleiro. |
+| `Interface.Cursor` | Lógica de movimentação e destaque visual da célula selecionada. |
+| `Jogo.Jogo` | Loop principal (*Game Loop*) e gerenciamento de estados. |
+| `Jogo.Logica` | Funções puras de lógica, entrada de dados (`getKey`) e regras. |
 
 ---
 
-## 🛠️ Configuração e Instalação
+## Configuração e Instalação
 
-Este projeto utiliza **Haskell Stack** para gerenciar dependências e garantir compatibilidade.
+Este projeto utiliza o **Haskell Stack** para gerenciamento de dependências.
 
 ### Pré-requisitos
 
-- [Stack](https://docs.haskellstack.org/en/stable/README/) instalado
-- Terminal que suporte ANSI escape codes (Linux, macOS ou Windows PowerShell / WSL)
+* [Haskell Stack](https://docs.haskellstack.org/en/stable/README/) instalado.
+* Terminal com suporte a *ANSI escape codes* (Linux, macOS ou Windows via WSL/PowerShell).
 
-### Como rodar
+### Passo a Passo
 
-1. Clone o repositório:
+1.  **Clone o repositório:**
 
-   ```bash
-   git clone https://github.com/SEU-USUARIO/campo-minado-haskell.git
-   cd campo-minado-haskell
+    ```bash
+    git clone [https://github.com/SEU-USUARIO/campo-minado-haskell.git](https://github.com/SEU-USUARIO/campo-minado-haskell.git)
+    cd campo-minado-haskell
+    ```
 
+2.  **Compile e execute o projeto:**
 
-2. Compile e execute com Stack:
-   ```bash
-   stack setup
-   stack build
-   stack run
+    ```bash
+    stack setup
+    stack build
+    stack run
+    ```
+
+---
+
+## Autores
+
+Este projeto foi desenvolvido pelos alunos:
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/annegmsilva">
+        <img src="https://github.com/annegmsilva.png" width="100px;" alt="Foto de Anne Grazieli"/><br>
+        <sub><b>Anne Grazieli</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/joycevnr">
+        <img src="https://github.com/joycevnr.png" width="100px;" alt="Foto de Joyce Vitória"/><br>
+        <sub><b>Joyce Vitória</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/Eduarda-Cabral">
+        <img src="https://github.com/Eduarda-Cabral.png" width="100px;" alt="Foto de Maria Eduarda"/><br>
+        <sub><b>Maria Eduarda</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/Pedroz007">
+        <img src="https://github.com/Pedroz007.png" width="100px;" alt="Foto de Pedro Henrique"/><br>
+        <sub><b>Pedro Henrique</b></sub>
+      </a>
+    </td>
+     <td align="center">
+      <a href="https://github.com/Thiago-Barbos">
+        <img src="https://github.com/Thiago-Barbos.png" width="100px;" alt="Foto de Thiago Barbosa"/><br>
+        <sub><b>Thiago Barbosa</b></sub>
+      </a>
+    </td>
+  </tr>
+</table>
