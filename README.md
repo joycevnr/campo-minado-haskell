@@ -14,7 +14,7 @@
   Desenvolvido para a disciplina de <i>Paradigmas de Linguagens de Programação</i> da <b>UFCG</b>.
 </p>
 
-[Funcionalidades](#funcionalidades-do-projeto) • [Estrutura](#estrutura-do-projeto) • [Instalação](#configuração-e-instalação) • [Autores](#autores)
+[Funcionalidades](#funcionalidades-do-projeto) • [Demonstração](#demonstração) • [Estrutura](#estrutura-do-projeto) • [Instalação](#configuração-e-instalação) • [Autores](#autores)
 
 </div>
 
@@ -40,6 +40,29 @@ O jogo é totalmente executado no terminal (`CLI`) e conta com as seguintes cara
 6. **Interface:** Desenho do tabuleiro em ASCII com destaque para a célula selecionada.
 
 ---
+
+## Demonstração
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <img src="img/Menu.png" height="200" alt="Menu Principal">
+        <br><sub><b>Menu Principal</b></sub>
+      </td>
+      <td align="center">
+        <img src="img/Vitoria.png" height="200" alt="Vitória">
+        <img src="img/GameOver.png" height="200" alt="Game Over">
+        <br><sub><b>Vitória / Derrota</b></sub>
+      </td>
+    </tr>
+  </table>
+  <br />
+    <img src="img/Jogo.png" height="500" alt="Gameplay">
+  <br>
+  <sub><b>Tabuleiro em Execução</b></sub>
+</div>
+
 
 ## Estrutura do Projeto
 
